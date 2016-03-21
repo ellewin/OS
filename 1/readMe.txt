@@ -1,1 +1,1 @@
-Запустите программу с ключом -help, и она сама вам все расскажет:)
+Start the program with -help, and she will tell you everything:)
