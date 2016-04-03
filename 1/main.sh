@@ -127,55 +127,60 @@ win()
 		 fi
 	fi
 }
-	
 
+my_trap()
+{
+	if test -p $fifo
+		then
+		rm $fifo
+	fi
+	exit 0
+} 
+
+#ctrl+C
+trap my_trap INT	
+fifo=a
 if [ "$1" = "-help" ]
-	then echo 'Run the program with -init'
+	then 
 	echo 'Enter coordinates from zero to two'
 	exit 0
 fi
 
 #Файл нужен для того, чтобы понимать, чей ход (если 0, то ходит первый игрок, его фигура - крестики; если 1 - второй игрок, нолики)
-if [ "$1" = "-init" ]
-	then 
-	if test f.txt
-		then rm f.txt
-	fi
-	touch f.txt
-	echo "0">f.txt
-	if ! test l
-		then mknod l p
-	fi
-	exit 0
-fi
+# if [ "$1" = "-init" ]
+	# then 
+	# if test f.txt
+		# then rm f.txt
+	# fi
+	# touch f.txt
+	# echo "0">f.txt
+	# if ! test l
+		# then mknod l p
+	# fi
+	# exit 0
+# fi
 
 #Основной код программы
 
-if ! test f.txt
-	then echo 'Start program with -init'
-	exit 0
-fi
-if ! test l
-	then echo 'Start program with -init'
-	exit 0
+if ! test -p $fifo
+	then
+	mknod $fifo p
+	step=1
+else
+	step=2
 fi
 
-a=`cat f.txt`
-if  [ "$a" = "0" ]
+if  [ "$step" = "1" ]
 	then 
-	step=1
+	cat $fifo
 	figure1='X'
 	figure2='O'
-	echo "1">f.txt
 else
-	if [ "$a" = "1" ]
+	if [ "$step" = "2" ]
 		then 
-		step=2
+		echo $step>$fifo
 		figure1='O'
 		figure2='X'
-		echo "0">f.txt
-	else
-		exit 0
 	fi 
 fi
 
@@ -193,7 +198,6 @@ d[9]=' '
 while (true)
 do
 	clear
-	#wn=0
 	if [ "$step" = "1" ]
 		then
 		echo 'Lets go'
@@ -205,7 +209,7 @@ do
 			continue
 		fi
 		str="$x$y"
-		echo "$str">l
+		echo "$str">$fifo
 		filling
 		step=2
 		win
@@ -214,12 +218,13 @@ do
 			clear
 			echo 'You are win!'
 			printDesc
+			#rm $fifo
 			exit 0
 		fi
 	else
 		echo 'Waiting'
 		printDesc
-		str=`cat l`
+		str=`cat $fifo`
 		x="${str:0:1}"
 		y="${str:1:1}"
 		filling
@@ -230,6 +235,7 @@ do
 			clear
 			echo 'You are looser!'
 			printDesc
+			rm $fifo
 			exit 0
 		fi
 	fi
@@ -238,6 +244,10 @@ do
 		clear
 		echo 'Friendship wins!'
 		printDesc
+		if ! test -p $fifo
+			then
+			rm $fifo
+		fi
 		exit 0
 	fi
 done
