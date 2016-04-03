@@ -1,1 +1,1 @@
-Start the program with -help, and she will tell you everything:)
+Start the program with -help, and it will tell you everything:)
