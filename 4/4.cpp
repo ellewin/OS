@@ -12,7 +12,20 @@ using namespace std;
 
 int main(int argc, char *argv[], char *envp[])
 {
+	
 	string name(argv[1]);
+	if(name=="-help" || name=="--help")
+	{
+		cout<<"Enter file-name the desired character the substitution character"<<endl;
+		return 0;
+	}
+	string word1(argv[2]);
+	string word2(argv[3]);
+	if(word1.size()!=1 || word2.size()!=1)
+	{
+		cout<<"1 changeable character and 1 replaces the symbol"<<endl;
+		return 0;
+	}
 	string filename=name+".lck";
 	int fd=open(argv[1],O_RDWR);
 	flock(fd,LOCK_EX);
